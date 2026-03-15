@@ -2,7 +2,7 @@
 
 **Feature Branch**: `[001-define-openclaw-platform]`  
 **Created**: 2026-03-14  
-**Status**: Draft  
+**Status**: Clarified  
 **Input**: User description: "Define OpenClaw as a secure single-user, multi-channel personal AI assistant platform with CLI-first onboarding, plugin-based extensibility, and companion apps across desktop and mobile."
 
 ## User Scenarios & Testing _(mandatory)_
@@ -22,9 +22,9 @@ same operator identity.
 
 **Acceptance Scenarios**:
 
-1. **Given** an operator has connected a supported messaging surface,
-   **When** they send a request from that surface, **Then** the assistant
-   responds in the same conversation.
+1. **Given** an operator has connected a supported surface (a messaging channel
+   or the local terminal), **When** they send a request from that surface,
+   **Then** the assistant responds in the same conversation.
 2. **Given** an operator has connected more than one supported surface,
    **When** they contact the assistant from any connected surface,
    **Then** each surface reaches the same assistant identity without requiring a
@@ -114,6 +114,10 @@ breaking the baseline flow.
 - An optional add-on fails to load after being selected.
 - The operator uses multiple surfaces in close succession and expects one
   consistent assistant identity.
+- A surface's per-surface access policy changes while a conversation is in
+  progress on that surface.
+- A companion device loses its pairing and needs to re-establish access without
+  the operator redoing the full setup.
 
 ## Requirements _(mandatory)_
 
@@ -125,8 +129,9 @@ breaking the baseline flow.
   surface and receive the response in that same surface.
 - **FR-003**: The system MUST preserve one shared operator identity across all
   connected surfaces so duplicate assistant setup is not required.
-- **FR-004**: The system MUST provide a guided onboarding flow that takes an
-  operator from first launch to ready-to-message state.
+- **FR-004**: The system MUST provide a terminal-driven guided onboarding flow
+  that takes an operator from first launch to ready-to-message state, requiring
+  no manual file editing to complete setup.
 - **FR-005**: The system MUST require explicit operator approval before first
   use of any capability that can affect local devices, external accounts, or
   personal contacts.
@@ -134,8 +139,9 @@ breaking the baseline flow.
   ready, unavailable, or needs operator action.
 - **FR-007**: The system MUST provide recovery guidance when onboarding,
   authentication, connection, or activation fails.
-- **FR-008**: The system MUST support companion access on desktop and mobile in
-  addition to messaging surfaces.
+- **FR-008**: The system MUST support companion access on desktop and mobile by
+  allowing paired devices to connect to the same assistant identity as
+  additional surfaces alongside messaging channels.
 - **FR-009**: The system MUST keep baseline assistant use available when no
   optional add-ons are installed.
 - **FR-010**: The system MUST allow optional add-ons to extend channels,
@@ -145,6 +151,12 @@ breaking the baseline flow.
   instance as the standard workflow.
 - **FR-012**: The system MUST continue supporting the primary assistant flow
   even when one optional surface or add-on is unavailable.
+- **FR-013**: The system MUST allow the operator to set a per-surface access
+  policy that controls whether that surface accepts requests from any party,
+  only an approved set of known contacts, or no one.
+- **FR-014**: The system MUST treat the local terminal as a supported
+  interaction surface that can be used to reach the assistant directly,
+  subject to the same per-surface access controls as other surfaces.
 
 ### Key Entities _(include if feature involves data)_
 
@@ -152,14 +164,19 @@ breaking the baseline flow.
   the assistant.
 - **Assistant Identity**: The single personal assistant instance the operator
   reaches across all connected surfaces.
-- **Interaction Surface**: Any supported messaging channel or companion app the
-  operator uses to access the assistant.
+- **Interaction Surface**: Any supported messaging channel, local terminal
+  session, or paired companion app the operator uses to access the assistant.
+  Each surface may have its own access policy controlling who can use it.
 - **Gateway Instance**: The operator-owned control boundary that hosts the
   assistant and connected surfaces.
 - **Optional Add-On**: An installable extension that adds channels, memory, or
   skills beyond the baseline assistant.
 - **Capability Approval**: The explicit operator consent required before the
-  assistant can use sensitive or higher-risk capabilities.
+  assistant can use sensitive or higher-risk capabilities, such as actions that
+  affect local files, run system commands, or interact with external accounts.
+- **Surface Access Policy**: The operator-configured rule for each interaction
+  surface that determines which parties are permitted to send requests through
+  that surface.
 
 ### Assumptions
 
@@ -168,15 +185,21 @@ breaking the baseline flow.
   operator administration.
 - Operators expect to reuse existing communication surfaces rather than learn a
   brand new primary interface.
+- The local terminal is the primary operator interface during initial setup and
+  ongoing administration; it is also a valid surface for interacting with the
+  assistant directly.
 - Optional add-ons expand capability but are never required for the first
   successful assistant conversation.
 
 ### Scope Boundaries
 
-- In scope: personal assistant access across supported surfaces, guided setup,
-  trust controls, companion access, and optional extensibility.
+- In scope: personal assistant access across supported surfaces (messaging
+  channels, local terminal, and companion apps), guided terminal-driven setup,
+  trust controls and per-surface access policies, companion device pairing,
+  and optional extensibility.
 - Out of scope: enterprise multi-tenant administration, shared-team ownership,
-  and mandatory installation of every optional surface or add-on.
+  mandatory installation of every optional surface or add-on, and managing
+  multiple independent assistant identities on one gateway.
 
 ## Success Criteria _(mandatory)_
 
